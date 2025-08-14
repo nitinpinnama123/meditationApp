@@ -1,50 +1,66 @@
 import React, { useState } from "react";
 import {
   View,
-  SafeAreaView,
-  Image,
-  Alert,
-  Text,
   TextInput,
-  TouchableOpacity
+  Button,
+  Text,
+  Alert,
+  SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack, useRouter } from "expo-router";
-import { COLORS, icons, SHADOWS } from "../constants";
+import { useRouter, Stack } from "expo-router";
+import { COLORS } from "../constants"; // Adjust path to match your project
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = async () => {
+  // Step 2: Form Validation
+  const validateForm = () => {
     if (!email || !password) {
       Alert.alert("Validation Error", "Please fill in all fields.");
-      return;
+      return false;
     }
 
-    const userDetails = { email, password, token: "sample-token" };
-    console.log("userDetails", userDetails);
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Validation Error", "Invalid email format.");
+      return false;
+    }
 
+    return true;
+  };
+
+  // Step 3: Authenticate User
+  const handleLogin = async () => {
     try {
-      const detailsDatafromSignup = await AsyncStorage.getItem("userDetails");
+      const storedUser = await AsyncStorage.getItem("userDetails");
 
-      if (detailsDatafromSignup) {
-        const parsedDetails = JSON.parse(detailsDatafromSignup);
+      if (!storedUser) {
+        Alert.alert("Login Error", "No user found. Please sign up first.");
+        return;
+      }
 
-        if (
-          userDetails.email === parsedDetails.email &&
-          userDetails.password === parsedDetails.password
-        ) {
-          router.push("/home");
-        } else {
-          Alert.alert("Error", "Incorrect email or password.");
-        }
+      const parsedUser = JSON.parse(storedUser);
+
+      if (email === parsedUser.email && password === parsedUser.password) {
+        Alert.alert("Success", "Logged in successfully!");
+        router.push("/home"); // Navigate to home screen
       } else {
-        Alert.alert("Error", "No user details found in AsyncStorage.");
+        Alert.alert("Login Error", "Incorrect email or password.");
       }
     } catch (error) {
-      console.error("Error accessing AsyncStorage", error);
+      console.error("Login error:", error);
+      Alert.alert("Error", "Something went wrong.");
+    }
+  };
+
+  // Step 4: Handle Login Button Press
+  const handleLoginPress = () => {
+    if (validateForm()) {
+      handleLogin();
     }
   };
 
@@ -54,91 +70,53 @@ const Login = () => {
         options={{
           headerStyle: { backgroundColor: COLORS.lightWhite },
           headerShadowVisible: false,
-          headerLeft: () => <></>,
-          headerTitle: "",
+          headerTitle: "Login",
         }}
       />
 
       <View style={{ padding: 20 }}>
-        {/* Logo/Image */}
-        <View
+        {/* Step 1: UI Components */}
+        <TextInput
           style={{
-            padding: 20,
-            marginLeft: "auto",
-            marginRight: "auto",
-            backgroundColor: "#f0f0f0",
-            borderRadius: 50,
-            height: 90,
-            ...SHADOWS.medium,
-            shadowColor: COLORS.white,
+            borderColor: "#ccc",
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 5,
+            marginBottom: 10,
           }}
-        >
-          <Image
-            source={icons.menu}
-            style={{
-              width: 50,
-              height: 50,
-              marginBottom: 20,
-            }}
-          />
-        </View>
+          placeholder="Enter your email"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-        {/* Form Component */}
-        <View style={{ marginTop: 20 }}>
-          <View style={{ marginBottom: 20 }}>
-            <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: "#ccc",
-                padding: 10,
-                borderRadius: 5,
-                marginBottom: 10,
-              }}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-            />
+        <TextInput
+          style={{
+            borderColor: "#ccc",
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 5,
+            marginBottom: 20,
+          }}
+          placeholder="Enter your password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
 
-            <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: "#ccc",
-                padding: 10,
-                borderRadius: 5,
-                marginBottom: 10,
-              }}
-              value={password}
-              secureTextEntry={true}
-              onChangeText={setPassword}
-              placeholder="Password"
-            />
-          </View>
+        <Button title="Login" onPress={handleLoginPress} />
 
-          <TouchableOpacity
-            style={{
-              backgroundColor: COLORS.primary,
-              padding: 15,
-              borderRadius: 5,
-              alignItems: "center",
-            }}
-            onPress={handleLogin}
-          >
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>Login</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Navigation to Sign Up */}
+        {/* Navigation Prompt */}
         <View
           style={{
             flexDirection: "row",
             justifyContent: "center",
-            alignItems: "center",
-            margin: 10,
+            marginTop: 15,
           }}
         >
-          <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
+          <Text>Don't have an account?</Text>
           <TouchableOpacity onPress={() => router.push("/signup")}>
-            <Text style={{ color: "blue" }}>Sign Up</Text>
+            <Text style={{ color: "blue", marginLeft: 5 }}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>

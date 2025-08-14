@@ -18,6 +18,21 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  const validateForm = () => {
+    if (!userName || !email || !password) {
+      Alert.alert("Validation Error", "All fields are required.");
+      return false;
+    }
+
+    // Simple email format check
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Validation Error", "Please enter a valid email.");
+      return false;
+    }
+
+    return true;
+  };
   const handleRegister = async () => {
     if (!userName || !email || !password) {
       Alert.alert("Validation Error", "Please fill in all fields.");
