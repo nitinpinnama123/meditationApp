@@ -5,6 +5,7 @@ import { COLORS, SIZES } from "../constants/theme";
 import ScreenHeaderBtn from "../components/ScreenHeaderBtn";
 import Welcome from "../components/Welcome"; // ✅ Import Welcome component
 import PopularMeditation from "../components/PopularMeditation";
+import DailyMeditation from "../components/DailyMeditation";
 
 
 const Home = () => {
@@ -39,6 +40,7 @@ const Home = () => {
         >
           <Welcome userDetails={userDetails ? JSON.parse(userDetails) : null} />
           <PopularMeditation />
+          <DailyMeditation/>
         </View>
       </ScrollView>
     </SafeAreaView>
