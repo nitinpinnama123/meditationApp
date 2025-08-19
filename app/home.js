@@ -6,6 +6,7 @@ import ScreenHeaderBtn from "../components/ScreenHeaderBtn";
 import Welcome from "../components/Welcome"; // ✅ Import Welcome component
 import PopularMeditation from "../components/PopularMeditation";
 import DailyMeditation from "../components/DailyMeditation";
+import DailyQuote from "../components/DailyQuote";
 
 
 const Home = () => {
@@ -39,8 +40,9 @@ const Home = () => {
           testID="screensDisplay"
         >
           <Welcome userDetails={userDetails ? JSON.parse(userDetails) : null} />
+          <DailyQuote/>
           <PopularMeditation />
-          <DailyMeditation/>
+          <DailyMeditation />
         </View>
       </ScrollView>
     </SafeAreaView>
