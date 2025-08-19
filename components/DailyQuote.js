@@ -22,6 +22,8 @@ const DailyQuote = () => {
     }
   };
 
+  
+
   useEffect(() => {
     fetchQuote();
   }, []);
